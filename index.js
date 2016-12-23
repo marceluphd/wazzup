@@ -3,7 +3,7 @@ var http = require('http');
 var app = require('./server/server');
 var chatServer = require('./server/chatServer');
 
-var PORT = process.env.port || 3000;
+var PORT = process.env.PORT || 3000;
 
 // Start express server
 var server = http.createServer(app);

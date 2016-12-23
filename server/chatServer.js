@@ -1,106 +1,107 @@
-// @flow
-var socketio = require('socket.io');
-var users = [];
-var rooms = [];
+const socketio = require('socket.io');
 
-exports.listen = function(server){
-  io = socketio.listen(server);
-  io.on('connection', function(socket){
-    // Once connected show all active users and rooms
-    socket.emit('username', Object.keys(users));
-    rooms.forEach(function(room) {
-      socket.emit('room creation', room);
-    });
+const {
+  generateMessage,
+  generateLocationMessage,
+  isRealString,
+} = require('./utils');
+const User = require('./user');
 
-    loginUser(socket);
-    createRoom(socket);
-    joinRoom(socket);
-    sendChat(socket);
-    logoutUser(socket);
-    handleDisconnection(socket)
+const users = new User();
+
+// Join a new user
+// Chatting starts
+function handleJoinAndStartChatting(io, socket) {
+  socket.on('join', (userObj, cb) => {
+    if (!isRealString(userObj.username) || !isRealString(userObj.room)) {
+      return cb('Name and room name are required.');
+    }
+
+    if (users.isUsernameTaken(userObj.username)) {
+      return cb('This username is taken.');
+    }
+
+    if (userObj.username.length > 13) {
+      return cb('The username must be shorter than 14 characters.');
+    }
+
+    if (userObj.room.length > 13) {
+      return cb('The room name must be shorter than 14 characters.');
+    }
+
+    userObj.username = userObj.username.toLowerCase();
+    userObj.room = userObj.room.toLowerCase();
+
+    // If inputs are fine, let the user join
+    socket.join(userObj.room);
+
+    // -------- Add User --------
+    users.removeUser(socket.id);
+    users.addUser(socket.id, userObj.username, userObj.room);
+    io.to(userObj.room).emit('updatedUsersList', users.getUsers(userObj.room));
+
+    const roomsArr = users.getRooms();
+    const rooms = roomsArr.filter((el, i) => roomsArr.indexOf(el) === i);
+    io.emit('updatedRoomsList', rooms);
+
+    // -------- Send 'welcome to chat' message --------
+    socket.emit('newMessage',
+      generateMessage('Admin', `Hi ${userObj.username}. You joined room: ${userObj.room}`));
+
+    // -------- Send notification to others anout new user --------
+    socket.broadcast.to(userObj.room).emit('newMessage',
+      generateMessage('Admin', `${userObj.username} joined`));
+
+    // Callback
+    return cb(userObj);
+  });
+}
+
+// Create New Message
+function createMessage(io, socket) {
+  socket.on('createMessage', (newMessage, cb) => {
+    const user = users.getUser(socket.id);
+    if (user && isRealString(newMessage.body)) {
+      // Send to all except me
+      io.to(user.room).emit('newMessage',
+        generateMessage(user.username, newMessage.body));
+    }
+    cb();
+  });
+}
+
+// Create New Location Message
+function createLocationMessage(io, socket) {
+  socket.on('createLocationMessage', (coords) => {
+    const user = users.getUser(socket.id);
+    if (user) {
+      io.to(user.room).emit('newLocationMessage',
+        generateLocationMessage(user.username, coords.latitude, coords.longitude)
+      );
+    }
+  });
+}
+
+// When a client is disconnected
+function handleDisconnection(io, socket) {
+  socket.on('disconnect', () => {
+    const user = users.removeUser(socket.id);
+    if (user) {
+      io.to(user.room).emit('updatedUsersList', users.getUsers(user.room));
+      io.to(user.room).emit('newMessage',
+        generateMessage('Admin', `${user.username} left`)
+      );
+    }
+  });
+}
+
+exports.listen = (server) => {
+  const io = socketio.listen(server);
+
+  io.on('connection', (socket) => {
+    handleJoinAndStartChatting(io, socket);
+    createMessage(io, socket);
+    createLocationMessage(io, socket);
+    handleDisconnection(io, socket);
   });
 };
-
-function loginUser(socket){
-  socket.on('set username', function(name, callback){
-    if (name in users){
-      // callback(false);
-    } else {
-      // callback(true);
-      socket.username = name;
-      users[socket.username] = socket;
-      io.sockets.emit('username', Object.keys(users));
-    }
-  });
-}
-
-function createRoom(socket) {
-  socket.on('room name', function(data, callback){
-    if (data in rooms){
-      // callback(false);
-    } else {
-      // callback(true);
-      rooms.push(data);
-      io.sockets.emit('room creation', data);
-    }
-  });
-}
-
-function joinRoom(socket) {
-  socket.on('join room', function(room, callback) {
-    if (socket.room && socket.room === room) {
-      return;
-    }
-
-    if (socket.room && socket.room !== room) {
-      socket.leave(socket.room)
-    }
-
-    if (room) {
-      socket.room = room;
-      socket.join(room);
-    }
-  });
-}
-
-function sendChat(socket) {
-  socket.on('chat message', function(msg, room){
-    if(msg.substr(0,1) === '@') {
-      var spaceIndex = msg.indexOf(' ');
-      var user = msg.substring(1, spaceIndex);
-      var message = msg.substring(spaceIndex + 1);
-      if(user in users){
-        users[user].emit('chat message', '(PRIVATE)' + socket.username + ' : ' + message);
-        users[socket.username].emit('chat message', '(PRIVATE)' + socket.username + ' : ' + message);
-        return;
-      } else {
-        return 
-      }
-    } else {
-      io.sockets.in(socket.room).emit('chat message', socket.username + ' : ' + msg);
-    }
-  });
-}
-
-
-function sendPrivateMessage() {
-
-}
-
-function logoutUser(socket) {
-  socket.on('leave chat', function() {
-    if(!socket.username) return;
-    socket.leave(socket.room);
-    delete users[socket.username];
-    io.sockets.emit('username', Object.keys(users));
-  });
-}
-
-function handleDisconnection(socket) {
-  socket.on('disconnect', function(data){
-    if(!socket.username) return;
-    socket.leave(socket.room);
-    delete users[socket.username];
-    io.sockets.emit('username', Object.keys(users));
-  });
-}

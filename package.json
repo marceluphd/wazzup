@@ -1,42 +1,39 @@
 {
   "name": "wazzup",
   "version": "0.1.0",
-  "description": "Chat App ",
+  "description": "Chat App",
   "main": "index.js",
   "scripts": {
     "test": "mocha server/**/*.test.js",
     "test:watch": "mocha --exec 'npm run test'",
     "start": "nodemon index.js",
-    "flow": "flow; test $? -eq 0 -o $? -eq 2"
+    "lint": "eslint .; exit 0"
   },
   "keywords": [
     "Node.js",
     "Socket.io",
     "Express",
-    "Mongo",
-    "Real",
-    "Time",
+    "Real Time",
     "Chat"
   ],
   "author": "Yuichi Hagio <yhagio87@gmail.com> (http://github.com/yhagio)",
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^1.0.1",
-    "body-parser": "^1.15.2",
     "compression": "^1.6.2",
     "express": "^4.14.0",
-    "express-jwt": "^5.1.0",
     "helmet": "^3.1.0",
-    "jsonwebtoken": "^7.2.1",
-    "method-override": "^2.3.7",
-    "mongoose": "^4.7.1",
+    "moment": "^2.17.1",
     "morgan": "^1.7.0",
-    "pug": "^2.0.0-beta6",
     "socket.io": "^1.7.1"
   },
   "devDependencies": {
+    "babel-eslint": "^7.1.1",
     "chai": "^3.5.0",
-    "flow-bin": "^0.36.0",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.8.0",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0"
   }

@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  .container
+    h1 Sign in
+    form#signin-form(method='POST' action='/signin')
+      input#signin-username(type='text' name='username')
+      input#signin-password(type='password' name='password')
+      button Sign In

@@ -1,0 +1,90 @@
+* { 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; 
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font: 13px Helvetica, Arial;
+  height: 100%;
+}
+
+li {
+  list-style: none;
+}
+
+input {
+  height: 30px;
+}
+
+button {
+  width: 80px;
+  height: 30px;
+  border: none;
+}
+
+.hide{
+  /*display: none;*/
+  display: inline-block;
+  height: calc(100% - 50px);
+  position: fixed;
+  top: 0;
+  overflow-y: auto;
+}
+
+.show {
+  display: block;
+}
+
+
+/* Side Bar (Username, Chat room) */
+.side-bar {
+  width: 250px;
+  height: 100%;
+  background: #ddd;
+  padding: 5px;
+  display: inline-block;
+}
+
+.room-dropdown {
+  width: 100%;
+  height: 35px;
+  margin-bottom: 30px;
+}
+
+.leave-btn {
+  background: darkorange;
+}
+
+/* Main box (Chat Form Area) */
+.main-box {
+  display: inline-block;
+  height: calc(100% - 50px);
+  width: calc(100% - 250px);
+  margin: 0;
+  padding: 10px;
+  position: fixed;
+  top: 0;
+  overflow-y: auto;
+  /*border: 1px solid black;*/
+}
+
+.chat-form {
+  position: fixed;
+  bottom: 0;
+  /*background: #aaa;*/
+  width: 100%;
+  padding: 10px;
+}
+
+.chat-form input {
+  width: calc(100% - 350px);
+}
+
+.send-btn {
+
+}

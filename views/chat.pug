@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  // Side bar
+  .side-bar
+    h3 Chat
+    
+    unless user
+      form#username-form(method='POST' action='/signup')
+        input#username(type='text' name='username')
+        button Set username
+    
+    if user
+      button#leave-btn.leave-btn Leave
+      
+      form#chat-room-form
+        input#room-name(type='text')
+        button Create room
+      h4 Rooms
+      select#room-list.room-dropdown(name='room-list')
+        option(selected='true', disabled='disabled') Select Room
+        option(value='r101') r101
+        option(value='r102') r102
+      h4#your-room
+      h4 Active users
+      #usernames
+
+  // Main Container - Chat Area
+  if user
+    #main-container.hide
+      ul#messages
+      form#chat-form.chat-form
+        input#message(autocomplete='off')
+        button.send-btn Send

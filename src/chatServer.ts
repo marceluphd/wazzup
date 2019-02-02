@@ -1,18 +1,19 @@
-const socketio = require('socket.io');
+import socketio, { Server, Socket } from 'socket.io';
+import { Server as httpServer } from 'http';
 
-const {
+import {
   generateMessage,
   generateLocationMessage,
-  isRealString,
-} = require('./utils');
-const User = require('./user');
+  isRealString
+} from './utils';
+import User, { IUser } from './user';
 
 const users = new User();
 
 // Join a new user
 // Chatting starts
-function handleJoinAndStartChatting(io, socket) {
-  socket.on('join', (userObj, cb) => {
+function handleJoinAndStartChatting(io: Server, socket: Socket) {
+  socket.on('join', (userObj: IUser, cb: any) => {
     if (!isRealString(userObj.username) || !isRealString(userObj.room)) {
       return cb('Name and room name are required.');
     }
@@ -45,12 +46,21 @@ function handleJoinAndStartChatting(io, socket) {
     io.emit('updatedRoomsList', rooms);
 
     // -------- Send 'welcome to chat' message --------
-    socket.emit('newMessage',
-      generateMessage('Admin', `Hi ${userObj.username}. You joined room: ${userObj.room}`));
+    socket.emit(
+      'newMessage',
+      generateMessage(
+        'Admin',
+        `Hi ${userObj.username}. You joined room: ${userObj.room}`
+      )
+    );
 
     // -------- Send notification to others anout new user --------
-    socket.broadcast.to(userObj.room).emit('newMessage',
-      generateMessage('Admin', `${userObj.username} joined`));
+    socket.broadcast
+      .to(userObj.room)
+      .emit(
+        'newMessage',
+        generateMessage('Admin', `${userObj.username} joined`)
+      );
 
     // Callback
     return cb(userObj);
@@ -58,50 +68,60 @@ function handleJoinAndStartChatting(io, socket) {
 }
 
 // Create New Message
-function createMessage(io, socket) {
+function createMessage(io: Server, socket: Socket) {
   socket.on('createMessage', (newMessage, cb) => {
     const user = users.getUser(socket.id);
     if (user && isRealString(newMessage.body)) {
       // Send to all except me
-      io.to(user.room).emit('newMessage',
-        generateMessage(user.username, newMessage.body));
+      io.to(user.room).emit(
+        'newMessage',
+        generateMessage(user.username, newMessage.body)
+      );
     }
     cb();
   });
 }
 
 // Create New Location Message
-function createLocationMessage(io, socket) {
-  socket.on('createLocationMessage', (coords) => {
+function createLocationMessage(io: Server, socket: Socket) {
+  socket.on('createLocationMessage', coords => {
     const user = users.getUser(socket.id);
     if (user) {
-      io.to(user.room).emit('newLocationMessage',
-        generateLocationMessage(user.username, coords.latitude, coords.longitude)
+      io.to(user.room).emit(
+        'newLocationMessage',
+        generateLocationMessage(
+          user.username,
+          coords.latitude,
+          coords.longitude
+        )
       );
     }
   });
 }
 
 // When a client is disconnected
-function handleDisconnection(io, socket) {
+function handleDisconnection(io: Server, socket: Socket) {
   socket.on('disconnect', () => {
     const user = users.removeUser(socket.id);
     if (user) {
       io.to(user.room).emit('updatedUsersList', users.getUsers(user.room));
-      io.to(user.room).emit('newMessage',
+      io.to(user.room).emit(
+        'newMessage',
         generateMessage('Admin', `${user.username} left`)
       );
     }
   });
 }
 
-exports.listen = (server) => {
+const listen = (server: httpServer) => {
   const io = socketio.listen(server);
 
-  io.on('connection', (socket) => {
+  io.on('connection', socket => {
     handleJoinAndStartChatting(io, socket);
     createMessage(io, socket);
     createLocationMessage(io, socket);
     handleDisconnection(io, socket);
   });
 };
+
+export default listen;

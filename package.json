@@ -1,17 +1,26 @@
 {
   "name": "wazzup",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Chat App",
-  "main": "index.js",
+  "main": "dist/app.js",
   "scripts": {
-    "test": "mocha server/**/*.test.js",
-    "test:watch": "mocha --exec 'npm run test'",
-    "start": "nodemon index.js",
-    "lint": "eslint .; exit 0"
+    "-------- PROD --------------": "",
+    "prod": "export NODE_ENV=produtcion && npm run build && node dist/app.js",
+    "-------- DEV ---------------": "",
+    "dev": "export NODE_ENV=development && npm run build && node dist/app.js",
+    "watch-tsc": "tsc -w",
+    "watch-node": "export NODE_ENV=development && nodemon dist/app.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-tsc\" \"npm run watch-node\"",
+    "-------- BUILD -------------": "",
+    "build": "npm run format && npm run lint && tsc",
+    "-------- TEST --------------": "",
+    "lint": "tslint 'src/**/*.ts'",
+    "fixlint": "tslint 'src/**/*.ts' --fix",
+    "format": "prettier --write \"{src,test}/**/*.ts\""
   },
   "engines": {
-    "node": "6.7.0",
-    "npm": "3.10.3"
+    "node": "10.15.1",
+    "npm": "6.4.1"
   },
   "keywords": [
     "Node.js",
@@ -22,23 +31,24 @@
   ],
   "author": "Yuichi Hagio <yhagio87@gmail.com> (http://github.com/yhagio)",
   "license": "MIT",
-  "dependencies": {
-    "compression": "^1.6.2",
-    "express": "^4.14.0",
-    "helmet": "^3.1.0",
-    "moment": "^2.17.1",
-    "morgan": "^1.7.0",
-    "socket.io": "^1.7.1"
-  },
   "devDependencies": {
-    "babel-eslint": "^7.1.1",
-    "chai": "^3.5.0",
-    "eslint": "^3.12.2",
-    "eslint-config-airbnb": "^13.0.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^2.2.3",
-    "eslint-plugin-react": "^6.8.0",
-    "mocha": "^3.2.0",
-    "nodemon": "^1.11.0"
+    "@types/compression": "0.0.36",
+    "@types/express": "^4.16.1",
+    "@types/helmet": "0.0.42",
+    "@types/morgan": "^1.7.35",
+    "@types/node": "^10.12.21",
+    "@types/socket.io": "^2.1.2",
+    "concurrently": "^4.1.0",
+    "nodemon": "^1.18.9",
+    "prettier": "^1.16.3",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1"
+  },
+  "dependencies": {
+    "compression": "^1.7.3",
+    "express": "^4.16.4",
+    "helmet": "^3.15.0",
+    "morgan": "^1.9.1",
+    "socket.io": "^2.2.0"
   }
 }

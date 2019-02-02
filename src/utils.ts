@@ -1,6 +1,4 @@
-const moment = require('moment');
-
-function validateStringLength(text, limit) {
+export function validateStringLength(text: string, limit: number): string {
   let errorMessage = '';
   if (text.trim().length > limit) {
     errorMessage = `* Cannot be more than ${limit} characters`;
@@ -12,30 +10,26 @@ function validateStringLength(text, limit) {
   return errorMessage;
 }
 
-function generateMessage(from, body) {
+export function generateMessage(from: string, body: string): object {
   return {
     from,
     body,
-    createdAt: moment().valueOf(),
+    createdAt: new Date()
   };
 }
 
-function generateLocationMessage(from, lat, lng) {
+export function generateLocationMessage(
+  from: string,
+  lat: string,
+  lng: string
+): object {
   return {
     from,
     url: `https://www.google.com/maps?q=${lat},${lng}`,
-    createdAt: moment().valueOf(),
+    createdAt: new Date()
   };
 }
 
-function isRealString(str) {
+export function isRealString(str: string): boolean {
   return typeof str === 'string' && str.trim().length > 0;
 }
-
-
-module.exports = {
-  validateStringLength,
-  generateMessage,
-  generateLocationMessage,
-  isRealString,
-};

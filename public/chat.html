@@ -1,72 +1,70 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8" />
     <title>Start Wazzup</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' href='/css/main.css'>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/css/main.css" />
   </head>
 
-  <body class='chat'>
-    <div class='sidebar'>
-      <h2 class='brand'>Wazzup</h2>
-      <h3 class='sidebar-title'>Profile</h3>
-      <form action="/chat.html" class='change-room-form'>
-        <span class='input-label'>Username:
-        <input
-          id='room-hidden'
-          type='hidden'
-          name='room'>
-        <input
-          id='profile-username'
-          class='change-room-input'
-          type='text'
-          name='username'
-          placeholder='Change username'/>
+  <body class="chat">
+    <div class="sidebar">
+      <h2 class="brand">Wazzup</h2>
+      <h3 class="sidebar-title">Profile</h3>
+      <form action="/chat.html" class="change-room-form">
+        <span class="input-label"
+          >Username:
+          <input id="room-hidden" type="hidden" name="room" />
+          <input
+            id="profile-username"
+            class="change-room-input"
+            type="text"
+            name="username"
+            placeholder="Change username"
+          />
         </span>
       </form>
 
-      <form action="/chat.html" class='change-room-form'>
-        <span class='input-label'>Room:
-        <input
-          id='username-hidden'
-          type='hidden'
-          name='username'>
-        <input
-          id='profile-room'
-          class='change-room-input'
-          type='text'
-          name='room'
-          placeholder='Change room to join'/>
+      <form action="/chat.html" class="change-room-form">
+        <span class="input-label"
+          >Room:
+          <input id="username-hidden" type="hidden" name="username" />
+          <input
+            id="profile-room"
+            class="change-room-input"
+            type="text"
+            name="room"
+            placeholder="Change room to join"
+          />
         </span>
       </form>
-      <h3 class='sidebar-title'>Room members</h3>
-      <div id='users'></div>
-      <h3 class='sidebar-title'>Rooms list</h3>
-      <div id='rooms'></div>
+      <h3 class="sidebar-title">Room members</h3>
+      <div id="users"></div>
+      <h3 class="sidebar-title">Rooms list</h3>
+      <div id="rooms"></div>
     </div>
 
-    <div class='chat-container'>
-      <ol id='messages' class='chat-messages'></ol>
+    <div class="chat-container">
+      <ol id="messages" class="chat-messages"></ol>
 
-      <div class='chat-footer'>
-        <form id='message-form' class='chat-form'>
+      <div class="chat-footer">
+        <form id="message-form" class="chat-form">
           <input
-            id='message-body'
-            class='chat-input'
-            name='message'
-            type='text'
-            placeholder='Message'
-            autofocus />
+            id="message-body"
+            class="chat-input"
+            name="message"
+            type="text"
+            placeholder="Message"
+            autofocus
+          />
           <button>Send</button>
         </form>
-        <button id='send-location'>Send Location</button>
+        <button id="send-location">Send Location</button>
       </div>
     </div>
-    
-    <script src='/socket.io/socket.io.js'></script>
-    <script src='/js/moment.min.js'></script>
-    <script src='/js/URLQueryToObj.js'></script>
-    <script src='/js/chatClient.js'></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/URLQueryToObj.js"></script>
+    <script src="/js/chatClient.js"></script>
   </body>
 </html>
